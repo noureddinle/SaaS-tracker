@@ -158,7 +158,7 @@ export default function AuthScreen() {
 
           {/* Submit Button */}
           <TouchableOpacity
-            className="bg-[#00C896] rounded-md py-4 mt-2"
+            className="bg-[#00C896] rounded-md py-2 mt-2"
             onPress={() =>
               console.log(isLogin ? "Logging in..." : "Registering...")
             }

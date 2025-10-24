@@ -1,4 +1,4 @@
-from rest_framework import generics, status
+from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
@@ -31,7 +31,12 @@ class LoginView(APIView):
         serializer = LoginResponseSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
-
+    
+class UserListView(generics.ListAPIView):
+    """Admin or staff: view all users"""
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]
 
 class ProfileView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
