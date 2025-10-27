@@ -4,5 +4,5 @@ from .models import invoice
 @admin.register(invoice)
 class InvoiceAdmin(admin.ModelAdmin):
     list_display = ("id", "client_name", "amount", "status", "created_at", "user")
-    list_filter = ("status", "created_at")
+    list_filter = ("status", "created_at", "owner", "due_date")
     search_fields = ("client_name", "user__email")
