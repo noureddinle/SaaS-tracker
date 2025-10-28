@@ -18,11 +18,29 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    username = None
+    username = None  
     email = models.EmailField(unique=True)
+
     full_name = models.CharField(max_length=255, blank=True)
-    phone = models.CharField(max_length=255, unique=True)
+    phone = models.CharField(max_length=50, unique=True, blank=True, null=True)
+    country = models.CharField(max_length=100, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+
+    profession = models.CharField(max_length=150, blank=True, null=True)
+    company_name = models.CharField(max_length=255, blank=True, null=True)
+    business_type = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text="E.g. Freelancer, Startup, Agency, Consultant..."
+    )
+    website = models.URLField(blank=True, null=True)
+    linkedin_profile = models.URLField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True, help_text="Short bio or company mission")
+
     date_joined = models.DateTimeField(auto_now_add=True)
+    last_login = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -30,4 +48,9 @@ class User(AbstractUser):
     objects = UserManager()
 
     def __str__(self):
-        return self.email
+        return f"{self.full_name or self.email}"
+
+    class Meta:
+        ordering = ["-date_joined"]
+        verbose_name = "User"
+        verbose_name_plural = "Users"
