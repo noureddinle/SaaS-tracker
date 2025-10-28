@@ -15,6 +15,9 @@ class RegisterView(generics.CreateAPIView):
 
 
 class LoginView(APIView):
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+    
     def post(self, request):
         email = request.data.get("email")
         password = request.data.get("password")

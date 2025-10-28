@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { View, Text, TouchableOpacity, Animated } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Link } from "expo-router";
+import { useTheme } from "@/contexts/ThemeContext";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function LandingPage() {
-  const [isDark, setIsDark] = useState(true);
-  const toggleTheme = () => setIsDark(!isDark);
+  const { isDark } = useTheme();
 
   // Animations
   const fadeAnim = new Animated.Value(0);
@@ -31,18 +32,9 @@ export default function LandingPage() {
       className={`flex-1 items-center justify-center ${
         isDark ? "bg-[#0B0B0B]" : "bg-white"
       }`}
-    >
-      {/* Theme Toggle */}
-      <TouchableOpacity
-        onPress={toggleTheme}
-        className="absolute top-12 right-6"
       >
-        <Feather
-          name={isDark ? "sun" : "moon"}
-          size={22}
-          color={isDark ? "white" : "black"}
-        />
-      </TouchableOpacity>
+        {/* Theme Toggle */}
+        <ThemeToggle className="absolute top-12 right-6 z-10" />
 
       {/* Content */}
       <Animated.View
@@ -89,15 +81,6 @@ export default function LandingPage() {
           </TouchableOpacity>
         </Link>
 
-        <TouchableOpacity onPress={toggleTheme} className="mt-6">
-          <Text
-            className={`text-center ${
-              isDark ? "text-gray-400" : "text-gray-600"
-            }`}
-          >
-            Toggle {isDark ? "Light" : "Dark"} Mode
-          </Text>
-        </TouchableOpacity>
       </Animated.View>
 
       {/* Footer */}

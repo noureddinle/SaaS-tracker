@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "apps.users",
     "apps.invoices",
+    "apps.agents",
 ]
 
 AUTH_USER_MODEL = "users.User"

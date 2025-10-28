@@ -7,7 +7,6 @@ from .serializers import AgentSerializer, AgentCreateSerializer, AgentActionLogS
 import requests
 
 
-# ✅ LIST & CREATE
 class AgentListCreateView(generics.ListCreateAPIView):
     """
     GET  → list all agents (admin/staff)
@@ -22,14 +21,12 @@ class AgentListCreateView(generics.ListCreateAPIView):
         return [permissions.IsAuthenticated()]
 
 
-# ✅ DETAIL VIEW (GET / PUT / DELETE)
 class AgentDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Agent.objects.all()
     serializer_class = AgentSerializer
     permission_classes = [permissions.IsAdminUser]
 
 
-# ✅ TRIGGER VIEW (core integration with n8n)
 class AgentTriggerView(APIView):
     """
     Trigger a specific agent’s automation workflow through its stored n8n webhook.
@@ -90,7 +87,6 @@ class AgentTriggerView(APIView):
             )
 
 
-# ✅ LOGS: list and details
 class AgentLogListView(generics.ListAPIView):
     queryset = AgentActionLog.objects.all().order_by("-created_at")
     serializer_class = AgentActionLogSerializer
