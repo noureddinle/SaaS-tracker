@@ -36,7 +36,10 @@ class User(AbstractUser):
     )
     website = models.URLField(blank=True, null=True)
     linkedin_profile = models.URLField(blank=True, null=True)
-    description = models.TextField(blank=True, null=True, help_text="Short bio or company mission")
+
+    # 🆕 Added fields:
+    bio = models.TextField(blank=True, null=True, help_text="Short bio or personal description")
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
 
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)

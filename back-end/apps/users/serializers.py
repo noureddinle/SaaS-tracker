@@ -9,7 +9,31 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'full_name', 'password']
+        fields = [
+            "id",
+            "email",
+            "full_name",
+            "phone",
+            "country",
+            "city",
+            "profession",
+            "company_name",
+            "business_type",
+            "website",
+            "linkedin_profile",
+            "bio",
+            "avatar_url",
+            "date_joined",
+        ]
+        read_only_fields = ["date_joined"]
+
+    def get_avatar_url(self, obj):
+        request = self.context.get("request")
+        if obj.avatar and request:
+            return request.build_absolute_uri(obj.avatar.url)
+        elif obj.avatar:
+            return obj.avatar.url
+        return None
 
     def create(self, validated_data):
         user = User.objects.create_user(

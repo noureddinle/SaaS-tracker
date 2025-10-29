@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     "apps.users",
     "apps.invoices",
     "apps.agents",
+    "apps.resumes",
+    'pgvector.django',
 ]
 
 AUTH_USER_MODEL = "users.User"
@@ -123,6 +125,10 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 
 # Internationalization

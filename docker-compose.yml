@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:17
+    image: ankane/pgvector:latest
     container_name: saasagent_db
     restart: always
     env_file: 
