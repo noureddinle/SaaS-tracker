@@ -1,24 +1,27 @@
-# syntax=docker/dockerfile:1
+# 1️⃣ Use a full Python image with build tools
 FROM python:3.11-slim
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-
-# Set work directory
+# 2️⃣ Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y netcat-traditional libpq-dev gcc && rm -rf /var/lib/apt/lists/*
+# 3️⃣ Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    gcc \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
+# 4️⃣ Copy only requirements first (for caching)
 COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copy project files
+# 5️⃣ Upgrade pip and install dependencies
+RUN pip install --upgrade pip setuptools wheel \
+    && pip install --no-cache-dir -r requirements.txt\
+      --extra-index-url https://download.pytorch.org/whl/cpu
+
+# 6️⃣ Copy the full project after dependencies
 COPY . .
 
-# Start Django app
+# 7️⃣ Default command
 CMD ["bash", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
-
-ENTRYPOINT [ "sh", "entrypoint.sh" ]
