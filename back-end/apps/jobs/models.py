@@ -66,7 +66,7 @@ class JobMatch(models.Model):
 
 class ProposalTemplate(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    job_match = models.ForeignKey(JobMatch, on_delete=models.CASCADE, related_name="proposals")
+    job_match = models.ForeignKey(JobMatch, on_delete=models.CASCADE, related_name="proposals_templates")
 
     ai_proposal = models.TextField(blank=True, default="")
     final_proposal = models.TextField(blank=True, default="")

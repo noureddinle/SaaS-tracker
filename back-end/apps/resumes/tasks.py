@@ -1,6 +1,7 @@
 from celery import shared_task
 from .models import Resume
-from .utils import extract_text_from_pdf, generate_embedding, generate_ai_summary
+from .utils import extract_text_from_pdf
+from core.ai import generate_ai_summary, generate_embedding
 
 
 @shared_task

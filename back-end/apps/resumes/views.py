@@ -8,8 +8,8 @@ from rest_framework import status
 
 from .models import Resume
 from .tasks import process_resume
-from .utils import extract_text_from_pdf, generate_embedding
-from .ai import analyze_resume_with_mistral
+from .utils import extract_text_from_pdf
+from core.ai import analyze_resume_with_mistral, generate_embedding
 
 
 @api_view(["POST"])

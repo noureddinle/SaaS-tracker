@@ -1,7 +1,8 @@
 from django.db import models
 from django.conf import settings
 from pgvector.django import VectorField
-from .utils import extract_text_from_pdf, generate_ai_summary, generate_embedding
+from .utils import extract_text_from_pdf
+from core.ai import generate_ai_summary, generate_embedding
 
 
 class Resume(models.Model):

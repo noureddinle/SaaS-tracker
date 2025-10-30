@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Proposal, JobMatch
 from apps.resumes.models import Resume
-from apps.resumes.utils import generate_ai_summary
+from core.ai import generate_ai_summary
 import requests
 import os
 

@@ -2,7 +2,7 @@ from sentence_transformers import SentenceTransformer
 import numpy as np
 
 # 768-d model to match Resume.embedding
-_MODEL = SentenceTransformer("sentence-transformers/all-mpnet-base-v2")
+_MODEL = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
 def embed_text(text: str):
     if not text:
