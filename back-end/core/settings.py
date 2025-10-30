@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     "apps.invoices",
     "apps.agents",
     "apps.resumes",
-    "apps.jobs"
+    "apps.jobs",
+    "apps.proposals",
     'pgvector.django',
 ]
 

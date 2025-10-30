@@ -22,13 +22,13 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('apps.invoices.urls')),
     path("api/auth/", include("apps.users.urls")),
     path('api/users/', include('apps.users.urls')),
     path('api/invoices/', include('apps.invoices.urls')),
     path("api/resumes/", include("apps.resumes.urls")),
     path("api/agents/", include("apps.agents.urls")),
     path("api/", include("apps.jobs.urls")),
+    path("api/proposals/", include("apps.proposals.urls")),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
