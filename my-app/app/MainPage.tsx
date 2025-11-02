@@ -1,8 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
+import AuthModal from "../components/Auth-Modal";
+import { Router } from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function MainPage() {
+  const router = useRouter();
   return (
     <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-6">
       {/* Hero Section */}
@@ -31,7 +35,7 @@ export default function MainPage() {
           transition={{ delay: 1, duration: 0.8 }}
           className="mt-10 flex flex-wrap justify-center gap-4"
         >
-          <button className="px-6 py-3 bg-white text-black font-medium rounded-xl hover:bg-gray-200 transition">
+          <button onClick={() => router.push("/auth/")} className="px-6 py-3 bg-white text-black font-medium rounded-xl hover:bg-gray-200 transition">
             Get Started
           </button>
           <button className="px-6 py-3 border border-gray-600 rounded-xl text-gray-300 hover:text-white hover:border-gray-400 transition">
