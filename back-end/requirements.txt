@@ -14,3 +14,5 @@ PyPDF2
 Pillow
 celery
 redis
+supabase
+dj_database_url

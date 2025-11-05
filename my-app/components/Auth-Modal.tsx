@@ -105,7 +105,7 @@ export default function AuthSteps() {
             />
 
             <button
-              className="w-full bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 rounded-lg py-3 text-sm font-medium flex items-center justify-center gap-2 transition"
+              className="w-full bg-neutral-900 hover:bg-neutral-800 rounded-lg py-3 text-sm font-medium flex items-center justify-center gap-2 transition"
             >
               Continue with email
             </button>

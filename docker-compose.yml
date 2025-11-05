@@ -3,46 +3,62 @@ services:
     image: ankane/pgvector:latest
     container_name: saasagent_db
     restart: always
-    env_file: 
-      - .env
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-  web:
-    build: 
-      context: ./back-end
-      dockerfile: Dockerfile
-    container_name: saasagent_backend
-    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
-    volumes:
-      - ./back-end:/app
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-    env_file: 
-      - .env
-  
-  n8n:
-    image: n8nio/n8n
-    container_name: saasagent_n8n
-    restart: always
-    ports:
-      - "5678:5678"
-    volumes:
-      - n8n_data:/home/node/.n8n
     env_file:
       - .env
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
 
   redis:
     image: redis:7
     container_name: saasagent_redis
     restart: always
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:6379"
+    networks:
+      - app-network
+
+  web:
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    container_name: saasagent_backend
+    command: >
+      bash -c "python manage.py migrate &&
+               python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./back-end:/app
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: saasagent_n8n
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - app-network
 
 volumes:
   postgres_data:
   n8n_data:
+
+networks:
+  app-network:
+    driver: bridge
