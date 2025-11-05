@@ -2,50 +2,25 @@
 
 import { useState } from "react";
 import { 
-  Search, 
-  Edit, 
   Bell, 
   LayoutGrid, 
-  Inbox, 
-  User, 
-  ChevronDown,
-  Settings,
-  Package,
-  TangentIcon as AgentIcon,
-  View,
   Plus,
   SlidersHorizontal,
   Eye,
   Circle,
   MoreHorizontal,
-  UserPlus,
-  Download,
-  File,
-  Receipt,
-  Paintbrush,
-  Cog,
+  User,
   Bot,
   Moon,
   Sun
 } from "lucide-react";
-import { FaGithub } from "react-icons/fa";
 import AgentManager from "@/components/AgentManager";
+import DashboardSidebar from "@/components/DashboardSidebar";
+import { useTheme } from "@/lib/ThemeContext";
 
 export default function DashboardPage() {
+  const { theme, toggleTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<"all" | "active" | "backlog" | "agents">("active");
-  const [showWorkspace, setShowWorkspace] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false);
-  const [showTeams, setShowTeams] = useState(false);
-  const [showTry, setShowTry] = useState(false);
-  const hiddenTabs = [
-    { id: "all", label: "All issues" },
-    { id: "active", label: "Active" },
-    { id: "backlog", label: "Backlog" },
-  ];
-
-  const checkTab = (tab: string) => {
-    return hiddenTabs.some((t) => t.id === tab) ? "hidden" : "";
-  };
 
   const issues = [
     { id: "INT-1", title: "Get familiar with Linear", number: 1, date: "Nov 2" },
@@ -54,131 +29,9 @@ export default function DashboardPage() {
     { id: "INT-4", title: "Import your data", number: 4, date: "Nov 2" },
   ];
 
-  const [theme, setTheme] = useState("dark");
-  const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
-  };
-
   return (
     <div className={`min-h-screen flex ${theme === "light" ? "bg-white text-black" : "bg-black text-white"}`}>
-      {/* Sidebar */}
-      <aside className={`w-54 border-r ${theme === "light" ? "border-gray-200" : "border-gray-900"} px-5 py-4 flex flex-col`}>
-        {/* Workspace header */}
-        <div className={`flex items-center gap-2 px-1 py-1 mb-6 ${theme === "light" ? "hover:bg-gray-100" : "hover:bg-gray-900"} rounded-md cursor-pointer`}>
-          <div className="h-6 w-6 rounded-md bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-sm font-semibold text-white">
-            IN
-          </div>
-          <span className="text-sm font-semibold">Interlud</span>
-          <ChevronDown className={`w-4 h-4 ${theme === "light" ? "text-gray-500" : "text-gray-500"}`} />
-          {/* Top actions */}
-         <div className="flex gap-1 px-2 ml-auto">
-            <button className={`flex-1 ${theme === "light" ? "hover:bg-gray-100" : "hover:bg-gray-900"} p-1.5 rounded-md`}>
-                <Search className={`w-4 h-4 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`} />
-            </button>
-            <button className={`flex-1 ${theme === "light" ? "hover:bg-gray-100" : "hover:bg-gray-900"} p-1.5 rounded-md`}>
-                <Edit className={`w-4 h-4 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`} />
-            </button>
-            <button onClick={toggleTheme} className={`flex-1 ${theme === "light" ? "hover:bg-gray-100" : "hover:bg-gray-900"} p-1.5 rounded-md`}>
-                {theme === "light" ? <Moon className={`w-4 h-4 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`} /> : <Sun className={`w-4 h-4 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`} />}
-            </button>
-         </div>
-        </div>
-
-        {/* Navigation */}
-        <nav className="space-y-1 text-sm flex-1">
-          <div className={`flex items-center gap-2 px-2 py-1.5 rounded-md ${theme === "light" ? "hover:bg-gray-100" : "hover:bg-gray-900"} cursor-pointer ${theme === "light" ? "text-gray-600" : "text-gray-400"} font-semibold text-xs`}>
-            <Inbox className="w-4 h-4" />
-            <span>Inbox</span>
-          </div>
-          <div className={`flex items-center gap-2 px-2 py-1.5 rounded-md ${theme === "light" ? "hover:bg-gray-100" : "hover:bg-gray-900"} cursor-pointer ${theme === "light" ? "text-gray-600" : "text-gray-400"} font-semibold text-xs`}>
-            <User className="w-4 h-4" />
-            <span>My Issues</span>
-          </div>
-
-          <div className="pt-4">
-            <div onClick={() => setShowWorkspace(!showWorkspace)} className={`flex items-center gap-2 ${theme === "light" ? "hover:bg-gray-100" : "hover:bg-neutral-900"} rounded-md cursor-pointer px-2 py-1 text-xs ${theme === "light" ? "text-gray-600" : "text-gray-500"} font-medium`}>
-              <button className="cursor-pointer text-xs font-semibold">Workspace</button>
-              <ChevronDown className={`w-3 h-3 ml-auto ${theme === "light" ? "text-gray-500" : "text-gray-400"}`} />
-            </div>
-            <div className={`mt-1 space-y-0.5 ${showWorkspace ? "block" : "hidden"}`}>
-              <div className={`flex items-center gap-2 px-2 py-1.5 rounded-md ${theme === "light" ? "hover:bg-gray-100" : "hover:bg-neutral-900"} cursor-pointer ${theme === "light" ? "text-gray-600" : "text-gray-400"} font-semibold text-xs`}>
-                <Package className="w-4 h-4" />
-                <span>Projects</span>
-              </div>
-              <div className={`flex items-center gap-2 px-2 py-1.5 rounded-md ${theme === "light" ? "hover:bg-gray-100" : "hover:bg-neutral-900"} cursor-pointer ${theme === "light" ? "text-gray-600" : "text-gray-400"} font-semibold text-xs`}>
-                <AgentIcon className="w-4 h-4" />
-                <span>Agents</span>
-              </div>
-              <div className={`flex items-center gap-2 px-2 py-1.5 rounded-md ${theme === "light" ? "hover:bg-gray-100" : "hover:bg-neutral-900"} cursor-pointer ${theme === "light" ? "text-gray-600" : "text-gray-400"} font-semibold text-xs`}>
-                <Receipt className="w-4 h-4" />
-                <span>Invoices</span>
-              </div>
-              <div className={`flex items-center gap-2 px-2 py-1.5 rounded-md ${theme === "light" ? "hover:bg-gray-100" : "hover:bg-neutral-900"} cursor-pointer ${theme === "light" ? "text-gray-600" : "text-gray-400"} font-semibold text-xs`}>
-                <File className="w-4 h-4"/>
-                <span>Documents</span>
-              </div>
-              <div className={`flex items-center gap-2 px-2 py-1.5 rounded-md ${theme === "light" ? "hover:bg-gray-100" : "hover:bg-neutral-900"} cursor-pointer ${theme === "light" ? "text-gray-600" : "text-gray-400"} font-semibold text-xs`}>
-                <View className="w-4 h-4" />
-                <span>Views</span>
-              </div>
-                <div className={`flex items-center gap-2 px-2 py-1.5 rounded-md ${theme === "light" ? "hover:bg-gray-100" : "hover:bg-neutral-900"} cursor-pointer ${theme === "light" ? "text-gray-600" : "text-gray-400"} font-semibold text-xs`}>
-                <MoreHorizontal className="w-4 h-4" />
-                <span>More</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-4">
-            <div onClick={() => setShowTeams(!showTeams)} className="flex items-center gap-2 px-2 py-1 text-xs text-gray-500 hover:bg-neutral-900 rounded-md cursor-pointer font-medium">
-              <button className="cursor-pointer text-xs font-semibold">Your teams</button>
-              <ChevronDown className="w-3 h-3 ml-auto text-gray-400" />
-            </div>
-            <div className="mt-1">
-              <div className={`flex items-center gap-2 px-2 py-1 text-gray-400 font-semibold ${showTeams ? "block" : "hidden"}`}>
-                <div className="h-4 w-4 rounded bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-[8px] font-bold">
-                  IN
-                </div>
-                <span>Interlud</span>
-                <ChevronDown className="w-3 h-3 ml-auto text-gray-400" />
-              </div>
-              <div className={`ml-6 mt-1 space-y-0.5 ${showTeams ? "block" : "hidden"}`}>
-                <div className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-neutral-900 cursor-pointer text-gray-400 font-semibold text-xs">
-                  <Circle className="w-3 h-3" />
-                  <span>Issues</span>
-                </div>
-                <div className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-neutral-900 cursor-pointer text-gray-400 font-semibold text-xs">
-                  <Settings className="w-3 h-3" />
-                  <span>Projects</span>
-                </div>
-                <div className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-neutral-900 cursor-pointer text-gray-400 font-semibold text-xs">
-                  <LayoutGrid className="w-3 h-3" />
-                  <span>Views</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="pt-4 mt-auto">
-            <div onClick={() => setShowTry(!showTry)} className="flex items-center gap-2 px-2 py-1 text-xs text-gray-500 hover:bg-neutral-900 rounded-md cursor-pointer font-medium mb-2">
-              <button className="cursor-pointer text-xs font-semibold">Try</button>
-              <ChevronDown className="w-3 h-3 ml-auto text-gray-400" />
-            </div>
-            <div className={`space-y-0.5 text-sm ${showTry ? "block" : "hidden"}`}>
-              <button className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-900 cursor-pointer font-semibold text-xs">
-                <Download className="w-4 h-4" />
-                <span>Import issues</span>
-              </button>
-              <button className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-900 cursor-pointer font-semibold text-xs">
-                <UserPlus className="w-4 h-4" />
-                <span>Invite people</span>
-              </button>
-              <button className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-900 cursor-pointer font-semibold text-xs">
-                <FaGithub className="w-4 h-4" />
-                <span>Link GitHub</span>
-              </button>
-            </div>
-          </div>
-        </nav>
-      </aside>
+      <DashboardSidebar />
 
       {/* Main content */}
       <main className="flex-1 flex flex-col">
@@ -235,8 +88,8 @@ export default function DashboardPage() {
             <button className={`p-1.5 ${theme === "light" ? "hover:bg-gray-100" : "hover:bg-neutral-900"} rounded-md`}>
               <Bell className={`w-4 h-4 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`} />
             </button>
-            <button onClick={toggleTheme} className={`p-1.5 ${theme === "light" ? "hover:bg-gray-100" : "hover:bg-neutral-900"} rounded-md`}>
-              {theme === "light" ? <Moon className={`w-4 h-4 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`} /> : <Sun className={`w-4 h-4 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`} />}
+            <button onClick={toggleTheme} className={`flex-1 ${theme === "light" ? "hover:bg-gray-100" : "hover:bg-gray-900"} p-1.5 rounded-md`}>
+                {theme === "light" ? <Moon className={`w-4 h-4 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`} /> : <Sun className={`w-4 h-4 ${theme === "dark" ? "text-gray-600" : "text-gray-400"}`} />}
             </button>
           </div>
         </header>

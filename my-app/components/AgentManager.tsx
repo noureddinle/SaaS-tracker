@@ -15,10 +15,12 @@ import {
   AlertCircle,
   ChevronDown,
   ChevronRight,
+  MoreHorizontal,
 } from "lucide-react";
 // import { agentAPI } from "@/lib/api"; // API disabled for UI testing
 import { Agent, AgentActionLog } from "@/lib/types";
-import { theme, getAgentGradient, getButtonClasses, getCardClasses } from "@/lib/theme";
+import { getAgentGradient, getButtonClasses, getCardClasses } from "@/lib/theme";
+import { useTheme } from "@/lib/ThemeContext";
 
 // Mock data for testing UI
 const MOCK_AGENTS: Agent[] = [
@@ -116,6 +118,7 @@ const MOCK_LOGS: AgentActionLog[] = [
 ];
 
 export default function AgentManager() {
+  const { theme } = useTheme();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [logs, setLogs] = useState<AgentActionLog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -193,20 +196,19 @@ export default function AgentManager() {
   };
 
   const getAgentIcon = (type: string) => {
+    const iconClass = `w-4 h-4 ${theme === "light" ? "text-gray-600" : "text-gray-500"}`;
     switch (type) {
       case "EMAIL":
       case "INVOICE_AUTOMATION":
-        return <Mail className="w-5 h-5" />;
+        return <Mail className={iconClass} />;
       case "NOTIFIER":
-        return <MessageCircle className="w-5 h-5" />;
+        return <MessageCircle className={iconClass} />;
       case "PROPOSAL_GENERATOR":
-        return <FileText className="w-5 h-5" />;
+        return <FileText className={iconClass} />;
       default:
-        return <Bot className="w-5 h-5" />;
+        return <Bot className={iconClass} />;
     }
   };
-
-  // Removed - now using theme.getAgentGradient()
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -260,35 +262,35 @@ export default function AgentManager() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className={`${theme.typography.h2} ${theme.colors.text.primary}`}>Automation Agents</h2>
-          <p className={`${theme.typography.body} ${theme.colors.text.tertiary} mt-1`}>
-            Manage and monitor your n8n automation workflows
+          <h2 className={`text-lg font-semibold ${theme === "light" ? "text-black" : "text-white"}`}>Automation Agents</h2>
+          <p className={`text-xs ${theme === "light" ? "text-gray-500" : "text-gray-500"} mt-0.5`}>
+            {agents.length} {agents.length === 1 ? 'agent' : 'agents'}
           </p>
         </div>
         <button
           onClick={fetchAgents}
-          className={`flex items-center gap-2 ${getButtonClasses('secondary')}`}
+          className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${theme === "light" ? "hover:bg-gray-100 text-gray-600" : "hover:bg-gray-900 text-gray-400"}`}
         >
-          <RefreshCw className="w-4 h-4" />
+          <RefreshCw className="w-3.5 h-3.5" />
           Refresh
         </button>
       </div>
 
       {/* Agent Cards */}
       {agents.length === 0 ? (
-        <div className="bg-black border border-gray-100 rounded-lg p-12 text-center">
-          <Bot className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-400 mb-2">No agents configured</h3>
-          <p className="text-sm text-gray-500">
+        <div className={`${theme === "light" ? "bg-gray-50" : "bg-gray-950"} border ${theme === "light" ? "border-gray-200" : "border-gray-900"} rounded-md p-12 text-center`}>
+          <Bot className={`w-12 h-12 mx-auto mb-3 ${theme === "light" ? "text-gray-400" : "text-gray-700"}`} />
+          <h3 className={`text-sm font-medium ${theme === "light" ? "text-gray-700" : "text-gray-400"} mb-1`}>No agents configured</h3>
+          <p className={`text-xs ${theme === "light" ? "text-gray-500" : "text-gray-600"}`}>
             Create your first automation agent to get started
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="space-y-0">
           {agents.map((agent) => {
             const agentLogs = getAgentLogs(agent.id);
             const isExpanded = expandedAgent === agent.id;
@@ -296,119 +298,91 @@ export default function AgentManager() {
             return (
               <div
                 key={agent.id}
-                className={getCardClasses()}
+                className={`group border-b ${theme === "light" ? "border-gray-200 hover:bg-gray-50" : "border-gray-900 hover:bg-gray-950"} transition-colors`}
               >
                 {/* Card Header */}
-                <div className={theme.spacing.md}>
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-12 h-12 ${theme.rounded.lg} bg-gradient-to-br ${getAgentGradient(agent.type)} flex items-center justify-center text-white`}>
+                <div className="px-4 py-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className={`w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0 ${theme === "light" ? "bg-gray-100" : "bg-gray-900"}`}>
                         {getAgentIcon(agent.type)}
                       </div>
-                      <div>
-                        <h3 className={`${theme.typography.h4} ${theme.colors.text.primary}`}>{agent.name}</h3>
-                        <p className={`${theme.typography.small} ${theme.colors.text.tertiary}`}>{getAgentDescription(agent.type)}</p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h3 className={`text-sm font-medium ${theme === "light" ? "text-gray-900" : "text-gray-200"} truncate`}>{agent.name}</h3>
+                          <span className={`flex-shrink-0 w-1.5 h-1.5 rounded-full ${agent.active ? "bg-green-500" : "bg-gray-500"}`} />
+                        </div>
+                        <p className={`text-xs ${theme === "light" ? "text-gray-500" : "text-gray-500"} truncate`}>{agent.email}</p>
                       </div>
                     </div>
-                    
-                    {/* Status Badge */}
-                    <div className={`px-2.5 py-1 ${theme.rounded.full} ${theme.typography.small} font-medium ${
-                      agent.active 
-                        ? `${theme.colors.status.success.bg} ${theme.colors.status.success.text}` 
-                        : `${theme.colors.status.inactive.bg} ${theme.colors.status.inactive.text}`
-                    }`}>
-                      {agent.active ? "Active" : "Inactive"}
-                    </div>
-                  </div>
 
-                  {/* Agent Details */}
-                  <div className={`space-y-2 ${theme.typography.body} mb-4`}>
-                    <div className={`flex items-center gap-2 ${theme.colors.text.tertiary}`}>
-                      <Mail className="w-4 h-4" />
-                      <span>{agent.email}</span>
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={() => handleTriggerAgent(agent.id)}
+                        disabled={!agent.active || !agent.n8n_webhook || triggering === agent.id}
+                        className={`p-1.5 rounded-md text-xs font-medium transition-colors ${
+                          !agent.active || !agent.n8n_webhook || triggering === agent.id
+                            ? "text-gray-600 cursor-not-allowed"
+                            : theme === "light" ? "hover:bg-gray-200 text-gray-700" : "hover:bg-gray-800 text-gray-300"
+                        }`}
+                        title="Trigger agent"
+                      >
+                        {triggering === agent.id ? (
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Play className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                      
+                      <button
+                        onClick={() => handleToggleAgent(agent)}
+                        className={`p-1.5 rounded-md text-xs font-medium transition-colors ${
+                          theme === "light" ? "hover:bg-gray-200 text-gray-700" : "hover:bg-gray-800 text-gray-300"
+                        }`}
+                        title={agent.active ? "Pause agent" : "Activate agent"}
+                      >
+                        {agent.active ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                      </button>
+                      
+                      <button
+                        onClick={() => setExpandedAgent(isExpanded ? null : agent.id)}
+                        className={`p-1.5 rounded-md text-xs font-medium transition-colors ${
+                          theme === "light" ? "hover:bg-gray-200 text-gray-700" : "hover:bg-gray-800 text-gray-300"
+                        }`}
+                        title="View logs"
+                      >
+                        <MoreHorizontal className="w-3.5 h-3.5" />
+                      </button>
                     </div>
-                    <div className={`flex items-center gap-2 ${theme.colors.text.tertiary}`}>
-                      <Bot className="w-4 h-4" />
-                      <span className={`${theme.typography.small} font-mono ${theme.colors.background.tertiary} px-2 py-0.5 ${theme.rounded.sm}`}>
-                        {agent.type}
-                      </span>
-                    </div>
-                    {agent.n8n_webhook && (
-                      <div className={`flex items-center gap-2 ${theme.colors.text.tertiary}`}>
-                        <CheckCircle2 className={`w-4 h-4 ${theme.colors.status.success.text}`} />
-                        <span className={theme.typography.small}>Webhook configured</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleTriggerAgent(agent.id)}
-                      disabled={!agent.active || !agent.n8n_webhook || triggering === agent.id}
-                      className={`flex-1 flex items-center justify-center gap-2 ${getButtonClasses('primary')} disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed`}
-                    >
-                      {triggering === agent.id ? (
-                        <>
-                          <RefreshCw className="w-4 h-4 animate-spin" />
-                          Triggering...
-                        </>
-                      ) : (
-                        <>
-                          <Play className="w-4 h-4" />
-                          Trigger Now
-                        </>
-                      )}
-                    </button>
-                    
-                    <button
-                      onClick={() => handleToggleAgent(agent)}
-                      className={`px-4 py-2.5 ${theme.rounded.lg} ${theme.typography.body} font-medium ${theme.transition.normal} ${
-                        agent.active
-                          ? `${theme.colors.status.warning.bg} hover:bg-yellow-600/30 ${theme.colors.status.warning.text}`
-                          : `${theme.colors.status.success.bg} hover:bg-green-600/30 ${theme.colors.status.success.text}`
-                      }`}
-                    >
-                      {agent.active ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                    </button>
                   </div>
                 </div>
 
                 {/* Recent Logs */}
-                {agentLogs.length > 0 && (
-                  <div className={`border-t ${theme.colors.border.primary}`}>
-                    <button
-                      onClick={() => setExpandedAgent(isExpanded ? null : agent.id)}
-                      className={`w-full px-6 py-3 flex items-center justify-between ${theme.colors.background.hover} ${theme.transition.normal}`}
-                    >
-                      <span className={`${theme.typography.body} font-medium ${theme.colors.text.tertiary}`}>
-                        Recent Activity ({agentLogs.length})
-                      </span>
-                      {isExpanded ? (
-                        <ChevronDown className={`w-4 h-4 ${theme.colors.text.tertiary}`} />
-                      ) : (
-                        <ChevronRight className={`w-4 h-4 ${theme.colors.text.tertiary}`} />
-                      )}
-                    </button>
-                    
-                    {isExpanded && (
-                      <div className="px-6 pb-4 space-y-2">
-                        {agentLogs.map((log) => (
-                          <div
-                            key={log.id}
-                            className={`flex items-start gap-3 p-3 ${theme.colors.background.secondary} ${theme.rounded.lg}`}
-                          >
-                            {getStatusIcon(log.status)}
-                            <div className="flex-1 min-w-0">
-                              <p className={`${theme.typography.body} font-medium ${theme.colors.text.secondary}`}>{log.action}</p>
-                              <p className={`${theme.typography.small} ${theme.colors.text.muted} mt-0.5`}>
-                                {new Date(log.created_at).toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                {isExpanded && agentLogs.length > 0 && (
+                  <div className={`px-4 pb-3 border-t ${theme === "light" ? "border-gray-200" : "border-gray-900"}`}>
+                    <div className="pt-3 space-y-1.5">
+                      {agentLogs.map((log) => (
+                        <div
+                          key={log.id}
+                          className={`flex items-center gap-2 px-2 py-1.5 rounded text-xs ${
+                            theme === "light" ? "hover:bg-gray-100" : "hover:bg-gray-900"
+                          }`}
+                        >
+                          <div className={`w-1 h-1 rounded-full flex-shrink-0 ${
+                            log.status === "SUCCESS" ? "bg-green-500" : 
+                            log.status === "FAILED" ? "bg-red-500" : 
+                            "bg-yellow-500"
+                          }`} />
+                          <span className={`flex-1 truncate ${theme === "light" ? "text-gray-700" : "text-gray-400"}`}>
+                            {log.action}
+                          </span>
+                          <span className={`text-xs ${theme === "light" ? "text-gray-500" : "text-gray-600"}`}>
+                            {new Date(log.created_at).toLocaleTimeString()}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
