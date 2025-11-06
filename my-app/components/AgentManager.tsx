@@ -19,8 +19,8 @@ import {
 } from "lucide-react";
 // import { agentAPI } from "@/lib/api"; // API disabled for UI testing
 import { Agent, AgentActionLog } from "@/lib/types";
-import { getAgentGradient, getButtonClasses, getCardClasses } from "@/lib/theme";
-import { useTheme } from "@/lib/ThemeContext";
+import { getAgentGradient, getButtonClasses, getCardClasses } from "@/theme/theme";
+import { useTheme } from "@/theme/ThemeContext";
 
 // Mock data for testing UI
 const MOCK_AGENTS: Agent[] = [

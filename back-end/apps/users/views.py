@@ -21,10 +21,12 @@ class LoginView(APIView):
     def post(self, request):
         email = request.data.get("email")
         password = request.data.get("password")
-        user = authenticate(request, email=email, password=password)
+        user = authenticate(request, email=email, ,password=password)
 
         if not user:
             return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        if not user.
 
         refresh = RefreshToken.for_user(user)
         data = {

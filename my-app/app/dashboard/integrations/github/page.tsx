@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Bell, ChevronLeft, Plus, ChevronRight, ExternalLink } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import DashboardSidebar from "@/components/DashboardSidebar";
-import { useTheme } from "@/lib/ThemeContext";
+import { useTheme } from "@/theme/ThemeContext";
 
 export default function GitHubIntegrationPage() {
   const { theme } = useTheme();

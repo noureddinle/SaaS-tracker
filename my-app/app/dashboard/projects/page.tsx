@@ -2,7 +2,7 @@
 
 import { Bell, Plus, ExternalLink, SlidersHorizontal, Eye } from "lucide-react";
 import DashboardSidebar from "@/components/DashboardSidebar";
-import { useTheme } from "@/lib/ThemeContext";
+import { useTheme } from "@/theme/ThemeContext";
 
 export default function ProjectsPage() {
   const { theme } = useTheme();

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Bell, Plus, Download, MoreHorizontal, Moon, Sun, TrendingUp, TrendingDown } from "lucide-react";
 import DashboardSidebar from "@/components/DashboardSidebar";
-import { useTheme } from "@/lib/ThemeContext";
+import { useTheme } from "@/theme/ThemeContext";
 
 export default function InvoicesPage() {
   const { theme, toggleTheme } = useTheme();
@@ -62,7 +62,7 @@ export default function InvoicesPage() {
       {/* Main content */}
       <main className="flex-1 flex flex-col overflow-auto">
         {/* Top bar */}
-        <header className={`border-b ${theme === "light" ? "border-gray-200" : "border-gray-900"} px-6 py-3 flex items-center justify-between`}>
+        <header className={`border-b ${theme === "light" ? "border-gray-100" : "border-gray-900"} px-6 py-3 flex items-center justify-between`}>
           <h1 className="text-lg font-semibold">Invoices</h1>
           <div className="flex items-center gap-2">
             <button className={`p-1.5 ${theme === "light" ? "hover:bg-gray-100" : "hover:bg-neutral-900"} rounded-md`}>
@@ -80,7 +80,7 @@ export default function InvoicesPage() {
             <h2 className="text-2xl font-semibold mb-6">Today</h2>
             
             {/* Gross Volume Chart */}
-            <div className={`rounded-lg border ${theme === "light" ? "border-gray-200 bg-white" : "border-gray-800 bg-gray-950"} p-6 mb-4`}>
+            <div className={`rounded-lg border ${theme === "light" ? "border-gray-100 bg-white" : "border-gray-800 bg-gray-950"} p-6 mb-4`}>
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className={`text-sm font-medium mb-1 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>Gross volume</h3>
@@ -158,15 +158,15 @@ export default function InvoicesPage() {
 
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-3 gap-4">
-              <div className={`rounded-lg border ${theme === "light" ? "border-gray-200 bg-white" : "border-gray-800 bg-gray-950"} p-4`}>
+              <div className={`rounded-lg border ${theme === "light" ? "border-gray-100 bg-white" : "border-gray-800 bg-gray-950"} p-4`}>
                 <p className={`text-xs mb-2 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>USD balance</p>
                 <p className="text-2xl font-semibold">${stats.paid.toLocaleString()}</p>
               </div>
-              <div className={`rounded-lg border ${theme === "light" ? "border-gray-200 bg-white" : "border-gray-800 bg-gray-950"} p-4`}>
+              <div className={`rounded-lg border ${theme === "light" ? "border-gray-100 bg-white" : "border-gray-800 bg-gray-950"} p-4`}>
                 <p className={`text-xs mb-2 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>Pending</p>
                 <p className="text-2xl font-semibold">${stats.pending.toLocaleString()}</p>
               </div>
-              <div className={`rounded-lg border ${theme === "light" ? "border-gray-200 bg-white" : "border-gray-800 bg-gray-950"} p-4`}>
+              <div className={`rounded-lg border ${theme === "light" ? "border-gray-100 bg-white" : "border-gray-800 bg-gray-950"} p-4`}>
                 <p className={`text-xs mb-2 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>Overdue</p>
                 <p className="text-2xl font-semibold text-red-500">${stats.overdue.toLocaleString()}</p>
               </div>
@@ -272,7 +272,7 @@ export default function InvoicesPage() {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className={`rounded-lg border ${theme === "light" ? "border-gray-200 bg-white" : "border-gray-800 bg-gray-950"} p-6`}>
+              <div className={`rounded-lg border ${theme === "light" ? "border-gray-100 bg-white" : "border-gray-800 bg-gray-950"} p-6`}>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className={`text-sm font-medium ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>Total invoices</h3>
                   <span className={`text-xs px-2 py-1 rounded ${theme === "light" ? "bg-gray-100 text-gray-600" : "bg-gray-900 text-gray-400"}`}>
@@ -287,7 +287,7 @@ export default function InvoicesPage() {
                 </div>
               </div>
 
-              <div className={`rounded-lg border ${theme === "light" ? "border-gray-200 bg-white" : "border-gray-800 bg-gray-950"} p-6`}>
+              <div className={`rounded-lg border ${theme === "light" ? "border-gray-100 bg-white" : "border-gray-800 bg-gray-950"} p-6`}>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className={`text-sm font-medium ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>Payment rate</h3>
                   <span className={`text-xs px-2 py-1 rounded ${theme === "light" ? "bg-green-100 text-green-700" : "bg-green-950 text-green-400"}`}>
@@ -306,8 +306,8 @@ export default function InvoicesPage() {
             </div>
 
             {/* Invoices List */}
-            <div className={`rounded-lg border ${theme === "light" ? "border-gray-200 bg-white" : "border-gray-800 bg-gray-950"} overflow-hidden`}>
-              <div className={`px-6 py-4 border-b ${theme === "light" ? "border-gray-200" : "border-gray-800"}`}>
+            <div className={`rounded-lg border ${theme === "light" ? "border-gray-100 bg-white" : "border-gray-800 bg-gray-950"} overflow-hidden`}>
+              <div className={`px-6 py-4 border-b ${theme === "light" ? "border-gray-100" : "border-gray-800"}`}>
                 <h3 className="text-sm font-semibold">Recent invoices</h3>
               </div>
               

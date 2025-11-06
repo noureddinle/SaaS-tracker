@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { Bell, Upload, FileText, Trash2, Eye, Download, Sun, Moon } from "lucide-react";
 import DashboardSidebar from "@/components/DashboardSidebar";
-import { useTheme } from "@/lib/ThemeContext";
+import { useTheme } from "@/theme/ThemeContext";
 
 export default function DocumentsPage() {
   const { theme, toggleTheme } = useTheme();

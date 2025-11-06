@@ -20,7 +20,7 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     username = None  
     email = models.EmailField(unique=True)
-
+    is_email_verified = models.BooleanField(default=False)
     full_name = models.CharField(max_length=255, blank=True)
     phone = models.CharField(max_length=50, unique=True, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True)

@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import AgentManager from "@/components/AgentManager";
 import DashboardSidebar from "@/components/DashboardSidebar";
-import { useTheme } from "@/lib/ThemeContext";
+import { useTheme } from "@/theme/ThemeContext";
 
 export default function DashboardPage() {
   const { theme, toggleTheme } = useTheme();

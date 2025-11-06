@@ -2,7 +2,7 @@
 
 import { Bell, Upload, Download, Terminal, FileText } from "lucide-react";
 import DashboardSidebar from "@/components/DashboardSidebar";
-import { useTheme } from "@/lib/ThemeContext";
+import { useTheme } from "@/theme/ThemeContext";
 
 export default function ImportExportPage() {
   const { theme } = useTheme();

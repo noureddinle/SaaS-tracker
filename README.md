@@ -405,11 +405,6 @@ This project is licensed under the MIT License.
 - Next.js team
 - TailwindCSS
 
-## 📧 Support
-
-For questions or issues:
-- Email: automation@saasai.io
-- Create an issue on GitHub
 
 ## 🗺️ Roadmap
 
@@ -423,7 +418,3 @@ For questions or issues:
 - [ ] Webhook security (HMAC signatures)
 - [ ] Rate limiting for API calls
 - [ ] Agent retry logic with exponential backoff
-
----
-
-Made with ❤️ by the Oncree Team

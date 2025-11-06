@@ -2,7 +2,7 @@
 
 import { Bell, Inbox as InboxIcon } from "lucide-react";
 import DashboardSidebar from "@/components/DashboardSidebar";
-import { useTheme } from "@/lib/ThemeContext";
+import { useTheme } from "@/theme/ThemeContext";
 
 export default function InboxPage() {
   const { theme } = useTheme();
