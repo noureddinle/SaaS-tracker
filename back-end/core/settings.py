@@ -16,6 +16,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+FRONTEND_URL="http://localhost:3000"
+
 EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
 EMAIL_HOST = os.getenv("EMAIL_HOST")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT"))
@@ -88,9 +90,12 @@ ROOT_URLCONF = 'core.urls'
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",   
+    "http://localhost:8000",
     "http://127.0.0.1:8000",
     "http://10.0.2.2:8000",
 ]
+
+CORS_ALLOW_CREDENTIALS = True
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (

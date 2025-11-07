@@ -6,12 +6,14 @@ User = get_user_model()
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    avatar_url = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
         fields = [
             "id",
             "email",
+            "password",
             "full_name",
             "phone",
             "country",
@@ -36,11 +38,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         return None
 
     def create(self, validated_data):
-        user = User.objects.create_user(
-            email=validated_data['email'],
-            password=validated_data['password'],
-            full_name=validated_data.get('full_name', '')
-        )
+        password = validated_data.pop("password")
+        user = User.objects.create_user(password=password, **validated_data)
         return user
 
 

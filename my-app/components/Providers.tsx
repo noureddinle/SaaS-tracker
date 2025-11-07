@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import { ThemeProvider } from "@/theme/ThemeContext";
 import { ReactNode } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import CommandPalette from "./CommandPalette";
 import { ToastManager } from "./Toast";
 
 export function Providers({ children }: { children: ReactNode }) {
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [queryClient] = useState(() => new QueryClient());
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -23,13 +25,15 @@ export function Providers({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <ThemeProvider>
-      {children}
-      <CommandPalette
-        isOpen={isCommandPaletteOpen}
-        onClose={() => setIsCommandPaletteOpen(false)}
-      />
-      <ToastManager />
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        {children}
+        <CommandPalette
+          isOpen={isCommandPaletteOpen}
+          onClose={() => setIsCommandPaletteOpen(false)}
+        />
+        <ToastManager />
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
