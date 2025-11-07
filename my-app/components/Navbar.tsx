@@ -11,7 +11,7 @@ export default function Navbar() {
       </div>
       <div className="flex justify-between gap-10">
         <button>
-          <a href="#" className="text-gray-400 text-sm font-bold hover:text-primary transition">Login</a>
+          <a href="/auth/login" className="text-gray-400 text-sm font-bold hover:text-primary transition">Login</a>
         </button>
         <button className="bg-white text-gray-800 px-3 py-2 rounded-md hover:bg-white transition">
           <a href="#" className="text-gray-800 text-sm font-bold hover:text-primary transition">Get started</a>

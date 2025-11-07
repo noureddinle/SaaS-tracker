@@ -243,3 +243,64 @@ export const proposalAPI = {
   },
 };
 
+// Job API Functions
+import { JobPosting, JobMatch, APIResponse } from './types';
+
+export const jobAPI = {
+  // Get all jobs
+  getAll: async (params?: {
+    skills?: string;
+    remote?: boolean;
+    min_budget?: number;
+    source?: string;
+  }): Promise<JobPosting[]> => {
+    const queryParams = new URLSearchParams();
+    if (params?.skills) queryParams.append('skills', params.skills);
+    if (params?.remote !== undefined) queryParams.append('remote', String(params.remote));
+    if (params?.min_budget) queryParams.append('min_budget', String(params.min_budget));
+    if (params?.source) queryParams.append('source', params.source);
+
+    const url = `${API_BASE_URL}/jobs/jobs/${queryParams.toString() ? `?${queryParams}` : ''}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch jobs');
+    }
+    
+    const data: APIResponse<JobPosting> | JobPosting[] = await response.json();
+    return Array.isArray(data) ? data : (data.results || []);
+  },
+
+  // Get job matches for current user
+  getMatches: async (): Promise<JobMatch[]> => {
+    const response = await fetch(`${API_BASE_URL}/jobs/matches/`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch job matches');
+    }
+    
+    const data: APIResponse<JobMatch> | JobMatch[] = await response.json();
+    return Array.isArray(data) ? data : (data.results || []);
+  },
+
+  // Refresh matches for current user
+  refreshMatches: async (): Promise<{ updated: number }> => {
+    const response = await fetch(`${API_BASE_URL}/jobs/matches/refresh/`, {
+      method: 'POST',
+      headers: getHeaders(),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to refresh matches');
+    }
+    
+    return response.json();
+  },
+};
+

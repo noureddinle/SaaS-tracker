@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import AuthModal from "../components/Auth-Modal";
+import AuthModal from "../auth/register/page";
 import { Router } from "next/router";
 import { useRouter } from "next/navigation";
 

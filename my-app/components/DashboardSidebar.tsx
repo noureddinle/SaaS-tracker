@@ -19,6 +19,7 @@ import {
   Users,
   Eye,
   ChevronRight,
+  Briefcase,
 } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import { useTheme } from "@/theme/ThemeContext";
@@ -49,7 +50,7 @@ export default function DashboardSidebar() {
   }, []);
 
   return (
-    <aside className={`w-54 border-r ${theme === "light" ? "border-gray-200" : "border-gray-900"} px-5 py-4 flex flex-col relative`}>
+    <aside className={`w-54 border-r ${theme === "light" ? "border-gray-100" : "border-gray-900"} px-5 py-4 flex flex-col relative`}>
       {/* Workspace header */}
       <div ref={menuRef} className="relative mb-6">
         <div 
@@ -187,6 +188,16 @@ export default function DashboardSidebar() {
               } cursor-pointer font-semibold text-xs`}>
                 <Package className="w-4 h-4" />
                 <span>Projects</span>
+              </div>
+            </Link>
+            <Link href="/dashboard/jobs">
+              <div className={`flex items-center gap-2 px-2 py-1.5 rounded-md ${
+                isActive("/dashboard/jobs") 
+                  ? theme === "light" ? "bg-gray-100 text-gray-900" : "bg-neutral-900 text-white"
+                  : theme === "light" ? "hover:bg-gray-100 text-gray-600" : "hover:bg-neutral-900 text-gray-400"
+              } cursor-pointer font-semibold text-xs`}>
+                <Briefcase className="w-4 h-4" />
+                <span>Jobs</span>
               </div>
             </Link>
             <Link href="/dashboard/agents">

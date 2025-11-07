@@ -21,6 +21,7 @@ class User(AbstractUser):
     username = None  
     email = models.EmailField(unique=True)
     is_email_verified = models.BooleanField(default=False)
+    last_verification_sent = models.DateTimeField(null=True, blank=True, default=None)
     full_name = models.CharField(max_length=255, blank=True)
     phone = models.CharField(max_length=50, unique=True, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True)
@@ -37,7 +38,6 @@ class User(AbstractUser):
     website = models.URLField(blank=True, null=True)
     linkedin_profile = models.URLField(blank=True, null=True)
 
-    # 🆕 Added fields:
     bio = models.TextField(blank=True, null=True, help_text="Short bio or personal description")
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
 

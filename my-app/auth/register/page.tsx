@@ -6,8 +6,9 @@ import { FaGithub, FaGoogle, FaMicrosoft, FaApple } from "react-icons/fa";
 import { motion, AnimatePresence, animate } from "framer-motion"
 
 export default function AuthSteps() {
-  const [step, setStep] = useState<"select" | "email">("select");
+  const [step, setStep] = useState<"select" | "email" | "password" | "email-verification">("select");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const variants = {
     initial: { opacity: 0, y: 20, scale: 0.98 },
@@ -73,10 +74,9 @@ export default function AuthSteps() {
                 </a>
                 .
               </p>
-
               <p className="text-sm font-semibold text-gray-400 mt-6">
                 Already have an account?{" "}
-                <a href="#" className="text-white hover:underline">
+                <a href="/auth/login/" className="text-white hover:underline">
                   Log in
                 </a>
               </p>
@@ -105,6 +105,7 @@ export default function AuthSteps() {
             />
 
             <button
+              onClick={() => setStep("password")}
               className="w-full bg-neutral-900 hover:bg-neutral-800 rounded-lg py-3 text-sm font-medium flex items-center justify-center gap-2 transition"
             >
               Continue with email
@@ -117,6 +118,60 @@ export default function AuthSteps() {
               <ArrowLeft size={14} />
               Back to login
             </button>
+          </motion.div>
+        )}
+
+        {/* Step 3 — Enter password */}
+        <AnimatePresence>
+          {step === "password" && (
+            <motion.div
+              key="password"
+              variants={variants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.3, ease: "easeInOut" }}>
+              <h2 className="text-lg font-medium mb-6">Enter your password</h2>
+
+              <input
+                type="password"
+                placeholder="Enter your password..."
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2 text-sm mb-3 text-gray-300 focus:border-neutral-600 outline-none"
+              />
+
+              <button
+                className="w-full bg-neutral-900 hover:bg-neutral-800 rounded-lg py-3 text-sm font-medium flex items-center justify-center gap-2 transition"
+              >
+                Continue
+              </button>
+
+              <button
+                onClick={() => setStep("email")}
+                className="mt-6 text-gray-400 hover:text-white text-sm inline-flex items-center gap-1"
+              >
+                <ArrowLeft size={14} />
+                Back
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Step 4 — Email verification */}
+        {step === "email-verification" && (
+          <motion.div
+            key="email-verification"
+            variants={variants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ duration: 0.3, ease: "easeInOut" }}>
+            <h2 className="text-lg font-medium mb-6">Email verification</h2>
+
+            <p className="text-sm text-gray-400 mb-6">
+              We've sent a verification email to your email address.
+            </p>
           </motion.div>
         )}
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Bell, Plus, Download, MoreHorizontal, Moon, Sun, TrendingUp, TrendingDown } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Bell, Plus, Download, MoreHorizontal, Moon, Sun, TrendingUp, TrendingDown, ChevronDown } from "lucide-react";
 import DashboardSidebar from "@/components/DashboardSidebar";
 import { useTheme } from "@/theme/ThemeContext";
 
@@ -10,6 +10,28 @@ export default function InvoicesPage() {
   const [statusFilter, setStatusFilter] = useState<"ALL" | "PAID" | "PENDING" | "OVERDUE">("ALL");
   const [dateRange, setDateRange] = useState("Last 7 days");
   const [compareView, setCompareView] = useState("Previous period");
+  const [isDateRangeOpen, setIsDateRangeOpen] = useState(false);
+  const [isCompareOpen, setIsCompareOpen] = useState(false);
+  const dateRangeRef = useRef<HTMLDivElement>(null);
+  const compareRef = useRef<HTMLDivElement>(null);
+
+  const dateRangeOptions = ["Last 7 days", "Last 30 days", "Last 90 days", "This year"];
+  const compareOptions = ["Previous period", "Previous year", "No comparison"];
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dateRangeRef.current && !dateRangeRef.current.contains(event.target as Node)) {
+        setIsDateRangeOpen(false);
+      }
+      if (compareRef.current && !compareRef.current.contains(event.target as Node)) {
+        setIsCompareOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Mock invoice data
   const invoices = [
@@ -178,11 +200,11 @@ export default function InvoicesPage() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-semibold">Your overview</h2>
               <div className="flex items-center gap-2">
-                <button className={`flex items-center gap-2 px-4 py-2 text-sm rounded-md border ${theme === "light" ? "border-gray-300 hover:bg-gray-50" : "border-gray-700 hover:bg-gray-900"}`}>
+                <button className={`flex items-center gap-2 px-4 py-2 text-sm rounded-md bg-black hover:bg-gray-800 text-white border ${theme === "light" ? "border-gray-300 hover:bg-gray-50" : "border-gray-700 hover:bg-gray-900"}`}>
                   <Plus className="w-4 h-4" />
                   Add
                 </button>
-                <button className={`flex items-center gap-2 px-4 py-2 text-sm rounded-md border ${theme === "light" ? "border-gray-300 hover:bg-gray-50" : "border-gray-700 hover:bg-gray-900"}`}>
+                <button className={`flex items-center gap-2 px-4 py-2 text-sm rounded-md bg-blue-900 text-white border ${theme === "light" ? "border-gray-300 hover:bg-gray-50" : "border-gray-700 hover:bg-gray-900"}`}>
                   <MoreHorizontal className="w-4 h-4" />
                   Edit
                 </button>
@@ -193,37 +215,130 @@ export default function InvoicesPage() {
             <div className="flex items-center gap-3 mb-6">
               <div className="flex items-center gap-2">
                 <span className={`text-sm ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>Date range</span>
-                <select
-                  value={dateRange}
-                  onChange={(e) => setDateRange(e.target.value)}
-                  className={`px-3 py-1.5 text-sm rounded-md border ${
-                    theme === "light"
-                      ? "bg-white border-gray-300 text-gray-900"
-                      : "bg-gray-950 border-gray-700 text-gray-300"
-                  } focus:outline-none focus:ring-1 focus:ring-blue-500`}
-                >
-                  <option>Last 7 days</option>
-                  <option>Last 30 days</option>
-                  <option>Last 90 days</option>
-                  <option>This year</option>
-                </select>
+                
+                {/* Custom Select Menu */}
+                <div className="relative" ref={dateRangeRef}>
+                  <button
+                    onClick={() => setIsDateRangeOpen(!isDateRangeOpen)}
+                    className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded-md border ${
+                      theme === "light"
+                        ? "bg-white border-gray-300 text-gray-900 hover:border-gray-400"
+                        : "bg-gray-950 border-gray-700 text-gray-300 hover:border-gray-600"
+                    } focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all duration-200 min-w-[140px] justify-between`}
+                  >
+                    <span>{dateRange}</span>
+                    <ChevronDown 
+                      className={`w-4 h-4 transition-transform duration-300 ${
+                        isDateRangeOpen ? "rotate-180" : ""
+                      }`} 
+                    />
+                  </button>
+                  
+                  {/* Dropdown Menu with Animations */}
+                  <div
+                    className={`absolute top-full left-0 mt-1 z-50 rounded-md border shadow-lg overflow-hidden ${
+                      theme === "light"
+                        ? "bg-white border-gray-200"
+                        : "bg-gray-950 border-gray-800"
+                    } ${
+                      isDateRangeOpen
+                        ? "opacity-100 translate-y-0 pointer-events-auto"
+                        : "opacity-0 -translate-y-2 pointer-events-none"
+                    } transition-all duration-200 ease-out min-w-[140px]`}
+                  >
+                    {dateRangeOptions.map((option, index) => (
+                      <button
+                        key={option}
+                        onClick={() => {
+                          setDateRange(option);
+                          setIsDateRangeOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-2 text-sm transition-all duration-150 ${
+                          dateRange === option
+                            ? theme === "light"
+                              ? "bg-blue-500 text-white"
+                              : "bg-blue-600 text-white"
+                            : theme === "light"
+                              ? "text-gray-900 hover:bg-gray-50"
+                              : "text-gray-300 hover:bg-gray-900"
+                        } ${
+                          isDateRangeOpen
+                            ? "opacity-100"
+                            : "opacity-0"
+                        }`}
+                        style={{
+                          transitionDelay: isDateRangeOpen ? `${index * 30}ms` : "0ms"
+                        }}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
               
               <div className="flex items-center gap-2">
                 <span className={`text-sm ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>Compare</span>
-                <select
-                  value={compareView}
-                  onChange={(e) => setCompareView(e.target.value)}
-                  className={`px-3 py-1.5 text-sm rounded-md border ${
-                    theme === "light"
-                      ? "bg-white border-gray-300 text-gray-900"
-                      : "bg-gray-950 border-gray-700 text-gray-300"
-                  } focus:outline-none focus:ring-1 focus:ring-blue-500`}
-                >
-                  <option>Previous period</option>
-                  <option>Previous year</option>
-                  <option>No comparison</option>
-                </select>
+                
+                {/* Custom Select Menu */}
+                <div className="relative" ref={compareRef}>
+                  <button
+                    onClick={() => setIsCompareOpen(!isCompareOpen)}
+                    className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded-md border ${
+                      theme === "light"
+                        ? "bg-white border-gray-300 text-gray-900 hover:border-gray-400"
+                        : "bg-gray-950 border-gray-700 text-gray-300 hover:border-gray-600"
+                    } focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all duration-200 min-w-[160px] justify-between`}
+                  >
+                    <span>{compareView}</span>
+                    <ChevronDown 
+                      className={`w-4 h-4 transition-transform duration-300 ${
+                        isCompareOpen ? "rotate-180" : ""
+                      }`} 
+                    />
+                  </button>
+                  
+                  {/* Dropdown Menu with Animations */}
+                  <div
+                    className={`absolute top-full left-0 mt-1 z-50 rounded-md border shadow-lg overflow-hidden ${
+                      theme === "light"
+                        ? "bg-white border-gray-200"
+                        : "bg-gray-950 border-gray-800"
+                    } ${
+                      isCompareOpen
+                        ? "opacity-100 translate-y-0 pointer-events-auto"
+                        : "opacity-0 -translate-y-2 pointer-events-none"
+                    } transition-all duration-200 ease-out min-w-[160px]`}
+                  >
+                    {compareOptions.map((option, index) => (
+                      <button
+                        key={option}
+                        onClick={() => {
+                          setCompareView(option);
+                          setIsCompareOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-2 text-sm transition-all duration-150 ${
+                          compareView === option
+                            ? theme === "light"
+                              ? "bg-blue-500 text-white"
+                              : "bg-blue-600 text-white"
+                            : theme === "light"
+                              ? "text-gray-900 hover:bg-gray-50"
+                              : "text-gray-300 hover:bg-gray-900"
+                        } ${
+                          isCompareOpen
+                            ? "opacity-100"
+                            : "opacity-0"
+                        }`}
+                        style={{
+                          transitionDelay: isCompareOpen ? `${index * 30}ms` : "0ms"
+                        }}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               <div className="flex items-center gap-2 ml-auto">
@@ -311,7 +426,7 @@ export default function InvoicesPage() {
                 <h3 className="text-sm font-semibold">Recent invoices</h3>
               </div>
               
-              <div className="divide-y divide-gray-800">
+              <div className={`${theme === "light" ? "divide-y divide-gray-100" : "divide-y divide-gray-900"}`}>
                 {filteredInvoices.map((invoice) => (
                   <div
                     key={invoice.id}

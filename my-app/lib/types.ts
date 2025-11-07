@@ -100,6 +100,36 @@ export interface User {
   is_active?: boolean;
 }
 
+// Job Types
+export interface JobPosting {
+  id: number;
+  title: string;
+  company: string;
+  description: string;
+  requirements: string;
+  budget: number | null;
+  budget_type: "HOURLY" | "FIXED" | "";
+  posted_date: string | null;
+  source: string;
+  source_url: string;
+  location: string;
+  remote: boolean;
+  skills_required: string[];
+  scraped_at: string;
+  is_active: boolean;
+}
+
+export interface JobMatch {
+  id: number;
+  user: number;
+  job: JobPosting;
+  match_score: number;
+  matching_skills: string[];
+  experience_match: number;
+  created_at: string;
+  updated_at: string;
+}
+
 // API Response Types
 export interface APIResponse<T> {
   results?: T[];
