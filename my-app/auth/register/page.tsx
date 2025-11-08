@@ -189,10 +189,17 @@ export default function AuthSteps() {
                 <span className="font-semibold text-white">{email}</span>. Once you confirm it, you’ll be redirected to your dashboard.
               </p>
               <button
-                onClick={() => setStep("select")}
-                className="w-full bg-neutral-900 hover:bg-neutral-800 rounded-lg py-3 text-sm font-medium transition"
+                onClick={() => router.push("/auth/resend-verification-email")}
+                className="w-full bg-neutral-900 hover:bg-neutral-800 rounded-lg py-4 text-sm font-medium transition mb-6"
               >
-                Back to options
+                {registerMutation.isPending ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Resending verification email...
+                  </span>
+                ) : (
+                  "Resend verification email"
+                )}
               </button>
             </motion.div>
           )}

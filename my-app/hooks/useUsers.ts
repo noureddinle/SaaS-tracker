@@ -4,10 +4,12 @@ import { api } from "@/lib/apiClient";
 import {
   UserSchema,
   RegisterSchema,
+  RegisterResponseSchema,
   LoginSchema,
   AuthResponseSchema,
   type User,
   type RegisterData,
+  type RegisterResponse,
   type LoginData,
   type AuthResponse,
 } from "@/lib/schemas";
@@ -26,13 +28,11 @@ export function useCurrentUser() {
 }
 
 export function useRegister() {
-  return useMutation<AuthResponse, Error, RegisterData>({
+  return useMutation<RegisterResponse, Error, RegisterData>({
     mutationFn: async (data) => {
       RegisterSchema.parse(data);
       const res = await api.post("/auth/register/", data);
-      const result = AuthResponseSchema.parse(res.data);
-      saveTokens(result.access, result.refresh);
-      return result;
+      return RegisterResponseSchema.parse(res.data);
     },
   });
 }

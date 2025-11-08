@@ -14,6 +14,7 @@ export const UserSchema = z.object({
 
 export type User = z.infer<typeof UserSchema>;
 export type RegisterData = z.infer<typeof RegisterSchema>;
+export type RegisterResponse = z.infer<typeof RegisterResponseSchema>;
 export type LoginData = z.infer<typeof LoginSchema>;
 export type AuthResponse = z.infer<typeof AuthResponseSchema>;
 
@@ -28,6 +29,13 @@ export const RegisterSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
   full_name: z.string().optional(),
 });
+
+export const RegisterResponseSchema = z.object({
+  id: z.number(),
+  email: z.string().email(),
+  full_name: z.string().nullable().optional(),
+  date_joined: z.string().datetime().optional(),
+}).passthrough();
 
 export const LoginSchema = z.object({
   email: z.string().email(),

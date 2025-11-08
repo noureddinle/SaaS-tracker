@@ -1,24 +1,30 @@
-from rest_framework import generics, status, permissions
-from rest_framework.response import Response
-from django.contrib.auth import authenticate, get_user_model
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
-from django.contrib.auth.tokens import default_token_generator
-from django.template.loader import render_to_string
-from django.utils import timezone
+import logging
+import os
+
+import requests
 from datetime import timedelta
+from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import redirect
+from django.template.loader import render_to_string
+from django.utils import timezone
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from rest_framework import generics, status, permissions
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from .serializers import RegisterSerializer, UserSerializer, LoginResponseSerializer
 from .utils import generate_verification_link
-import os
+
 
 User = get_user_model()
 
 FRONTEND_URL = os.getenv("FRONTEND_URL")
+logger = logging.getLogger(__name__)
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -38,7 +44,6 @@ class RegisterView(generics.CreateAPIView):
         verification_link = generate_verification_link(user, request)
 
         subject = "Verify your email address"
-        from_email = "interlud12xe@gmail.com"
         recipient_list = [user.email]
 
         html_content = render_to_string("emails/verify_email.html", {
@@ -48,13 +53,63 @@ class RegisterView(generics.CreateAPIView):
         })
         text_content = f"Hi {user.first_name or 'there'}, please verify your email by clicking this link: {verification_link}"
 
+        if self._send_with_sendgrid(user, subject, text_content, html_content):
+            return
+
+        self._send_with_smtp(subject, text_content, html_content, recipient_list)
+
+    def _send_with_sendgrid(self, user, subject, text_content, html_content):
+        api_key = os.getenv("SENDGRID_API_KEY")
+        from_email = os.getenv("SENDGRID_FROM_EMAIL") or os.getenv("DEFAULT_FROM_EMAIL") or "interlud12xe@gmail.com"
+        if not api_key or not from_email:
+            return False
+
+        display_name = getattr(user, "full_name", None) or getattr(user, "first_name", None) or user.email
+        from_name = os.getenv("SENDGRID_FROM_NAME", "SaaS Tracker")
+        email_timeout = int(os.getenv("EMAIL_TIMEOUT", "10"))
+
+        payload = {
+            "personalizations": [
+                {
+                    "to": [{"email": user.email, "name": display_name}],
+                    "subject": subject,
+                }
+            ],
+            "from": {"email": from_email, "name": from_name},
+            "content": [
+                {"type": "text/plain", "value": text_content},
+                {"type": "text/html", "value": html_content},
+            ],
+        }
+
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
+
+        try:
+            response = requests.post(
+                "https://api.sendgrid.com/v3/mail/send",
+                headers=headers,
+                json=payload,
+                timeout=email_timeout,
+            )
+            response.raise_for_status()
+            logger.info("Verification email queued via SendGrid for %s", user.email)
+            return True
+        except requests.RequestException:
+            logger.exception("SendGrid email delivery failed for %s", user.email)
+            return False
+
+    def _send_with_smtp(self, subject, text_content, html_content, recipient_list):
+        from_email = os.getenv("DEFAULT_FROM_EMAIL") or os.getenv("EMAIL_HOST_USER") or "interlud12xe@gmail.com"
         msg = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
         msg.attach_alternative(html_content, "text/html")
         try:
             msg.send(fail_silently=False)
+            logger.info("Verification email sent via SMTP for %s", recipient_list[0])
         except Exception:
-            # Don't block registration if email delivery fails in development
-            pass
+            logger.exception("SMTP email delivery failed for %s", recipient_list[0])
 
 
 class VerifyEmailView(APIView):
