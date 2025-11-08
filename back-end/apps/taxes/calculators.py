@@ -1,4 +1,7 @@
 from .models import TaxYear, Expense, TaxPayment
+from apps.invoices.models import invoice
+
+from django.db.models import Sum
 
 
 class MoroccoTaxCalculator:
@@ -11,13 +14,15 @@ class MoroccoTaxCalculator:
         tax_year, _ = TaxYear.objects.get_or_create(user=self.user, year=year)
 
 
-        invoices = [] # Replace with actual Invoice model query
-        total_revenue = sum(inv.amount for inv in invoices)
-
+        invoices = invoice.objects.filter(user=self.user, due_date__year=year) 
+        total_revenue = invoices.aggregate(Sum('amount'))['amount__sum'] or 0
+        if total_revenue == 0:
+            return tax_year
 
         expenses = Expense.objects.filter(user=self.user, date__year=year, is_deductible=True)
-        total_expenses = sum(exp.amount * (exp.deduction_percentage / 100) for exp in expenses)
-
+        total_expenses = expenses.aggregate(Sum('amount'))['amount__sum'] or 0
+        if total_expenses == 0:
+            return tax_year
 
         if self.profile.tax_regime == 'AUTO_ENTREPRENEUR':
             tax_owed = total_revenue * 0.01
@@ -62,7 +67,7 @@ class MoroccoTaxCalculator:
 
 
     def calculate_quarterly_payment(self, year, quarter):
-        quarterly_revenue = 0 # Replace with invoice filter
+        quarterly_revenue = invoice.objects.filter(user=self.user, due_date__year=year, due_date__quarter=quarter).aggregate(Sum('amount'))['amount__sum'] or 0
         if self.profile.tax_regime == 'AUTO_ENTREPRENEUR':
             quarterly_tax = quarterly_revenue * 0.01
         else:
