@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import list_templates, generate_invoice_pdf, fetch_figma_layout
+from .views import import_figma_templates, UserInvoiceThemeView, InvoiceTemplateListView
 
 urlpatterns = [
-    path("templates/", list_templates, name="invoice-templates"),
-    path("generate-pdf/", generate_invoice_pdf, name="generate-invoice-pdf"),
-    path("figma/fetch/", fetch_figma_layout, name="figma-layout"),
+     path("figma/import/", import_figma_templates, name="import-figma-templates"),
+    path("user/theme/", UserInvoiceThemeView.as_view(), name="user-invoice-theme"),
+    path("templates/", InvoiceTemplateListView.as_view(), name="invoice-template-list"),
 ]

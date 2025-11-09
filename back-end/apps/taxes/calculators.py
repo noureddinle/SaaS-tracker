@@ -14,7 +14,7 @@ class MoroccoTaxCalculator:
         tax_year, _ = TaxYear.objects.get_or_create(user=self.user, year=year)
 
 
-        invoices = invoice.objects.filter(user=self.user, due_date__year=year) 
+        invoices = invoice.objects.filter(user=self.user, invoice_due_date__year=year) 
         total_revenue = invoices.aggregate(Sum('amount'))['amount__sum'] or 0
         if total_revenue == 0:
             return tax_year
@@ -67,7 +67,11 @@ class MoroccoTaxCalculator:
 
 
     def calculate_quarterly_payment(self, year, quarter):
-        quarterly_revenue = invoice.objects.filter(user=self.user, due_date__year=year, due_date__quarter=quarter).aggregate(Sum('amount'))['amount__sum'] or 0
+        quarterly_revenue = invoice.objects.filter(
+            user=self.user,
+            invoice_due_date__year=year,
+            invoice_due_date__quarter=quarter,
+        ).aggregate(Sum('amount'))['amount__sum'] or 0
         if self.profile.tax_regime == 'AUTO_ENTREPRENEUR':
             quarterly_tax = quarterly_revenue * 0.01
         else:

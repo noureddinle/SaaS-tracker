@@ -53,7 +53,7 @@
       <div class="card">
         <p class="title">Dates</p>
         <p class="value">Created: {{ invoice.created_at|date:"Y-m-d" }}</p>
-        {% if invoice.due_date %}<p class="value">Due: {{ invoice.due_date|date:"Y-m-d" }}</p>{% endif %}
+        {% if invoice.invoice_due_date %}<p class="value">Due: {{ invoice.invoice_due_date|date:"Y-m-d" }}</p>{% endif %}
       </div>
     </div>
 

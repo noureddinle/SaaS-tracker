@@ -34,20 +34,22 @@ class InvoiceViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return invoice.objects.filter(owner=self.request.user).order_by("-created_at")
+        return invoice.objects.filter(user=self.request.user).order_by("-created_at")
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(user=self.request.user)
 
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])
 def dashboard_summary(request):
     """Aggregate data for dashboard cards"""
-    user_invoices = invoice.objects.filter(owner=request.user)
+    user_invoices = invoice.objects.filter(user=request.user)
     total_invoices = user_invoices.count()
-    total_revenue = user_invoices.filter(status="paid").aggregate(Sum("amount"))["amount__sum"] or 0
-    pending_count = user_invoices.filter(status="pending").count()
-    paid_count = user_invoices.filter(status="paid").count()
+    total_revenue = (
+        user_invoices.filter(status="PAID").aggregate(Sum("amount"))["amount__sum"] or 0
+    )
+    pending_count = user_invoices.filter(status="PENDING").count()
+    paid_count = user_invoices.filter(status="PAID").count()
 
     return Response({
         "total_invoices": total_invoices,

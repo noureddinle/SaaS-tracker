@@ -14,13 +14,16 @@ class invoice(models.Model):
     invoice_due_date = models.DateField(null=True, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=10, default='MAD')
-    status = models.CharField(max_length=20, choices=[
-        ('PAID', 'Paid'),
-        ('PENDING', 'Pending'),
-        ('OVERDUE', 'Overdue')
-    ], default='Pending')
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ("PAID", "Paid"),
+            ("PENDING", "Pending"),
+            ("OVERDUE", "Overdue"),
+        ],
+        default="PENDING",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
-    due_date = models.DateField(null=True, blank=True) 
 
     class Meta:
         verbose_name = "Invoice"
@@ -35,25 +38,32 @@ class invoice(models.Model):
             year = self.invoice_date.year
             month = self.invoice_date.month
             day = self.invoice_date.day
-            last_invoice = self.objects.filter(invoice_date__year=year, invoice_date__month=month, invoice_date__day=day).order_by('-id').first()
+            last_invoice = (
+                type(self)
+                .objects.filter(
+                    invoice_date__year=year,
+                    invoice_date__month=month,
+                    invoice_date__day=day,
+                )
+                .order_by("-id")
+                .first()
+            )
             if last_invoice:
-                self.invoice_number = f"INV-{year}-{month}-{day}-{last_invoice.id + 1:06d}"
+                self.invoice_number = (
+                    f"INV-{year}-{month}-{day}-{last_invoice.id + 1:06d}"
+                )
             else:
                 self.invoice_number = f"INV-{year}-{month}-{day}-000001"
         super().save(*args, **kwargs)
 
     def mark_as_paid(self):
-        self.status = 'PAID'
-        self.invoice_status = 'PAID'
+        self.status = "PAID"
         self.save()
 
     def mark_as_pending(self):
-        self.status = 'PENDING'
-        self.invoice_status = 'PENDING'
+        self.status = "PENDING"
         self.save()
 
     def mark_as_overdue(self):
-        self.status = 'OVERDUE'
-        self.invoice_status = 'OVERDUE'
+        self.status = "OVERDUE"
         self.save()
-    
