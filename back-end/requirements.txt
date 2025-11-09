@@ -16,3 +16,4 @@ celery
 redis
 supabase
 dj_database_url
+weasyprint

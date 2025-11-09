@@ -26,6 +26,9 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 
+# Figma
+FIGMA_TOKEN = os.getenv("FIGMA_TOKEN", "")
+
 # Force IPv4 for all socket connections
 old_getaddrinfo = socket.getaddrinfo
 

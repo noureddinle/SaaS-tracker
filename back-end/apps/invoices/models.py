@@ -56,3 +56,4 @@ class invoice(models.Model):
         self.status = 'OVERDUE'
         self.invoice_status = 'OVERDUE'
         self.save()
+    
