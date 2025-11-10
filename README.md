@@ -206,7 +206,7 @@ curl -X POST http://localhost:8000/api/agents/ \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Invoice Automation",
-    "email": "automation@saasai.io",
+    "email": "your_email",
     "type": "EMAIL",
     "active": true,
     "n8n_webhook": "http://n8n:5678/webhook/invoice_summary"
@@ -370,7 +370,7 @@ WHATSAPP_PHONE_ID=your_whatsapp_phone_id
 WHATSAPP_TOKEN=your_whatsapp_token
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
-EMAIL_HOST_USER=automation@saasai.io
+EMAIL_HOST_USER=your_email
 EMAIL_HOST_PASSWORD=your_password
 ```
 
