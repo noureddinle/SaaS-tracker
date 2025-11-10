@@ -1,0 +1,27 @@
+/* Hide legacy GrapesJS panels */
+.gjs-pn-panels {
+  display: none !important;
+}
+
+/* Clean up selection outlines */
+.gjs-cv-canvas .gjs-selected,
+.gjs-cv-canvas .gjs-hovered {
+  outline: none !important;
+}
+
+/* Figma-like canvas background */
+.gjs-cv-canvas {
+  background: #111214 !important;
+}
+
+.gjs-frame,
+.gjs-cv-canvas iframe {
+  background: #fff !important;
+}
+
+/* Remove default dashed borders */
+.gjs-dashed > * {
+  outline: none !important;
+}
+
+

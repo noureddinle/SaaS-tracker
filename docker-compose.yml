@@ -22,6 +22,22 @@ services:
     networks:
       - app-network
 
+  celery:
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    container_name: saasagent_celery
+    command: >
+      bash -c "celery -A core.celery beat --loglevel=info"
+    volumes:
+      - ./back-end:/app
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
   web:
     build:
       context: ./back-end

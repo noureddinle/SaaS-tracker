@@ -15,6 +15,7 @@
     "framer-motion": "^12.23.24",
     "grapesjs": "^0.22.13",
     "grapesjs-blocks-basic": "^1.0.2",
+    "grapesjs-preset-webpage": "^1.0.3",
     "lucide-react": "^0.552.0",
     "next": "16.0.1",
     "next-auth": "^4.24.13",

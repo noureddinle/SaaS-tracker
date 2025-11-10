@@ -1,0 +1,215 @@
+{
+  "name": "SaaS_Agent_With_CSV",
+  "nodes": [
+    {
+      "id": "cron_1",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "parameters": {
+        "triggerTimes": [{ "hour": 9, "minute": 0 }]
+      }
+    },
+    {
+      "id": "login_2",
+      "name": "Admin Login",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [500, 300],
+      "parameters": {
+        "url": "http://saasagent_backend:8000/api/token/",
+        "method": "POST",
+        "sendBody": true,
+        "jsonParameters": true,
+        "bodyParametersJson": "{\"email\": \"automation@saasai.io\", \"password\": \"Qwerty123456789@\"}"
+      }
+    },
+    {
+      "id": "users_3",
+      "name": "Get All Users",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [800, 300],
+      "parameters": {
+        "url": "http://saasagent_backend:8000/api/users/",
+        "method": "GET",
+        "headerParametersJson": "={\"Authorization\": \"Bearer {{$json[\"access\"]}}\"}"
+      }
+    },
+    {
+      "id": "split_4",
+      "name": "Split Users",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [1100, 300],
+      "parameters": { "batchSize": 1 }
+    },
+    {
+      "id": "invoices_5",
+      "name": "Get User Invoices",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1400, 250],
+      "parameters": {
+        "url": "={{`http://saasagent_backend:8000/api/invoices/?user_id=${$json[\"id\"]}`}}",
+        "method": "GET",
+        "headerParametersJson": "={\"Authorization\": \"Bearer {{$items(\"Admin Login\")[0].json[\"access\"]}}\"}"
+      }
+    },
+    {
+      "id": "summary_6",
+      "name": "Compute Summary (merge user)",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1700, 250],
+      "parameters": {
+        "functionCode": "const user = $items(\"Split Users\", 0, 0).json;\nconst api = items[0].json;\nconst invoices = api.results ?? api ?? [];\nlet paid = 0, pending = 0, overdue = 0;\nconst overdueList = [];\nfor (const inv of invoices) {\n  if (inv.status === 'PAID') paid++;\n  else if (inv.status === 'PENDING') pending++;\n  else if (inv.status === 'OVERDUE') { overdue++; overdueList.push(inv); }\n}\n// sort overdue by due_date ASC\noverdueList.sort((a,b)=> new Date(a.due_date||0) - new Date(b.due_date||0));\nconst top3 = overdueList.slice(0,3);\n// Build HTML list and text lines safely\nfunction li(inv){ if(!inv) return ''; return `<li>${inv.client_name || '—'} — ${inv.amount ?? '—'} ${inv.currency||'MAD'} — Due ${inv.due_date || '—'}</li>`; }\nconst top3_html = `<ul>${li(top3[0])}${li(top3[1])}${li(top3[2])}</ul>`;\nfunction line(inv, idx){ if(!inv) return `${idx}. —`; return `${idx}. ${inv.client_name} — ${inv.amount} ${inv.currency||'MAD'}`; }\nconst top3_lines = `${line(top3[0],1)}\\n${line(top3[1],2)}\\n${line(top3[2],3)}`;\nreturn [{ json: {\n  // user\n  id: user.id, email: user.email, full_name: user.full_name || user.email, phone: user.phone || \"\",\n  // counts\n  total_count: invoices.length, paid_count: paid, pending_count: pending, overdue_count: overdue,\n  top3, top3_html, top3_lines,\n  invoices\n}}];"
+      }
+    },
+    {
+      "id": "prepCsv_7",
+      "name": "Prep CSV Rows",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1950, 180],
+      "parameters": {
+        "functionCode": "const { invoices } = $json;\nconst rows = (invoices && Array.isArray(invoices) ? invoices : []).map(inv => ({\n  InvoiceID: inv.id,\n  Client: inv.client_name,\n  Amount: inv.amount,\n  Currency: inv.currency || 'MAD',\n  Status: inv.status,\n  CreatedAt: inv.created_at,\n  DueDate: inv.due_date || ''\n}));\nif (rows.length === 0) {\n  rows.push({ InvoiceID: '', Client: 'No invoices found', Amount: '', Currency: '', Status: '', CreatedAt: '', DueDate: '' });\n}\nreturn rows.map(r => ({ json: r }));"
+      }
+    },
+    {
+      "id": "csv_8",
+      "name": "Spreadsheet File (CSV)",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 1,
+      "position": [2200, 180],
+      "parameters": {
+        "operation": "toFile",
+        "options": {
+          "fileFormat": "csv",
+          "fileName": "={{`invoices_${$items(\"summary_6\")[0].json.id}.csv`}}",
+          "useByteOrderMark": true
+        }
+      }
+    },
+    {
+      "id": "email_9",
+      "name": "Send Email (with CSV)",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [2450, 140],
+      "parameters": {
+        "fromEmail": "automation@saasai.io",
+        "toEmail": "={{$items(\"summary_6\")[0].json.email}}",
+        "subject": "Daily Invoice Summary — {{$now}}",
+        "htmlBody": "<h2>Daily Invoice Summary — {{$now}}</h2><p>Dear {{$items(\"summary_6\")[0].json.full_name}},</p><p>Please find below the summary of your invoices. A CSV file is attached with full details.</p><table border='1' cellspacing='0' cellpadding='6' style='border-collapse:collapse; font-family:Arial; font-size:14px;'><tr style='background-color:#f2f2f2;'><th>Status</th><th>Count</th></tr><tr><td>Paid</td><td>{{$items(\"summary_6\")[0].json.paid_count}}</td></tr><tr><td>Pending</td><td>{{$items(\"summary_6\")[0].json.pending_count}}</td></tr><tr><td>Overdue</td><td>{{$items(\"summary_6\")[0].json.overdue_count}}</td></tr><tr><td><b>Total</b></td><td><b>{{$items(\"summary_6\")[0].json.total_count}}</b></td></tr></table><h3>Top 3 Overdue Clients</h3>{{$items(\"summary_6\")[0].json.top3_html}}<p>Kind regards,<br><b>Oncree SaaS Automated Agent</b><br><span style='font-size:12px; color:#666;'>This message was generated automatically by the Oncree Invoicing System.</span></p>",
+        "attachments": [
+          {
+            "binaryPropertyName": "data"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wa_10",
+      "name": "Send WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [2450, 340],
+      "parameters": {
+        "url": "https://graph.facebook.com/v19.0/{{WHATSAPP_PHONE_ID}}/messages",
+        "method": "POST",
+        "authentication": "headerAuth",
+        "headerParametersJson": "={\"Authorization\":\"Bearer {{WHATSAPP_TOKEN}}\",\"Content-Type\":\"application/json\"}",
+        "sendBody": true,
+        "jsonParameters": true,
+        "bodyParametersJson": "={\"messaging_product\":\"whatsapp\",\"to\":\"{{$items(\\\"summary_6\\\")[0].json.phone}}\",\"type\":\"text\",\"text\":{\"body\":\"Hello {{$items(\\\"summary_6\\\")[0].json.full_name}}, here is your daily invoice summary for {{$now}}.\\nTotal: {{$items(\\\"summary_6\\\")[0].json.total_count}} | Paid: {{$items(\\\"summary_6\\\")[0].json.paid_count}} | Pending: {{$items(\\\"summary_6\\\")[0].json.pending_count}} | Overdue: {{$items(\\\"summary_6\\\")[0].json.overdue_count}}\\nTop overdues:\\n{{$items(\\\"summary_6\\\")[0].json.top3_lines}}\"}}"
+      }
+    },
+    {
+      "id": "next_11",
+      "name": "Next User",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [2700, 300],
+      "parameters": {
+        "batchSize": 1,
+        "continue": true
+      }
+    },
+    {
+      "parameters": { "path": "proposal_trigger", "method": "POST" },
+      "id": "1",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.BACKEND_URL}}/api/proposals/generate/",
+        "method": "POST",
+        "jsonParameters": true,
+        "bodyParametersJson": "={\"resume_id\": {{$json[\"resume_id\"]}}, \"job_id\": {{$json[\"job_id\"]}} }"
+      },
+      "id": "2",
+      "name": "Generate Proposal",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [550, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "automation@saasai.io",
+        "toEmail": "={{$json[\"email\"] || 'team@saasai.io'}}",
+        "subject": "AI Proposal Generated",
+        "htmlBody": "<h2>New AI Proposal Generated</h2><p><b>Proposal:</b><br>{{$json[\"user_proposal\"]}}</p><hr><p><b>Employer Message:</b><br>{{$json[\"employer_message\"]}}</p>"
+      },
+      "id": "3",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [850, 280]
+    },
+    {
+      "parameters": {
+        "url": "https://graph.facebook.com/v19.0/{{$env.WHATSAPP_PHONE_ID}}/messages",
+        "method": "POST",
+        "authentication": "headerAuth",
+        "headerParametersJson": "={\"Authorization\": \"Bearer {{$env.WHATSAPP_TOKEN}}\",\"Content-Type\":\"application/json\"}",
+        "sendBody": true,
+        "jsonParameters": true,
+        "bodyParametersJson": "={\"messaging_product\":\"whatsapp\",\"to\":\"{{$json[\"phone\"] || ''}}\",\"type\":\"text\",\"text\":{\"body\":\"Your new AI-generated proposal has been created! 🧠\\n\\n{{$json[\"user_proposal\"]}}\"}}"
+      },
+      "id": "4",
+      "name": "Send WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [850, 400]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": { "main": [[{ "node": "Admin Login", "type": "main", "index": 0 }]] },
+    "Admin Login": { "main": [[{ "node": "Get All Users", "type": "main", "index": 0 }]] },
+    "Get All Users": { "main": [[{ "node": "Split Users", "type": "main", "index": 0 }]] },
+    "Split Users": { "main": [[{ "node": "Get User Invoices", "type": "main", "index": 0 }]] },
+    "Get User Invoices": { "main": [[{ "node": "Compute Summary (merge user)", "type": "main", "index": 0 }]] },
+    "Compute Summary (merge user)": {
+      "main": [[
+        { "node": "Prep CSV Rows", "type": "main", "index": 0 },
+        { "node": "Send WhatsApp", "type": "main", "index": 0 }
+      ]]
+    },
+    "Prep CSV Rows": { "main": [[{ "node": "Spreadsheet File (CSV)", "type": "main", "index": 0 }]] },
+    "Spreadsheet File (CSV)": { "main": [[{ "node": "Send Email (with CSV)", "type": "main", "index": 0 }]] },
+    "Send Email (with CSV)": { "main": [[{ "node": "Next User", "type": "main", "index": 0 }]] },
+    "Send WhatsApp": { "main": [[{ "node": "Next User", "type": "main", "index": 0 }]] }
+  },
+  "Webhook Trigger": { "main": [[{ "node": "Generate Proposal", "type": "main", "index": 0 }]] },
+    "Generate Proposal": {
+      "main": [
+        { "node": "Send Email", "type": "main", "index": 0 },
+        { "node": "Send WhatsApp", "type": "main", "index": 0 }
+      ]
+    }
+}

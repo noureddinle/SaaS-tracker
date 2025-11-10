@@ -1,7 +1,11 @@
 .env
 *.env
-n8n.json
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+API_RECONNECT.md
+DESIGN_SYSTEM_IMPLEMENTAION.md
+agents.exemple.json
+IMPLEMENTATION_SUMMARY.md
+THEME_USAGE.md
