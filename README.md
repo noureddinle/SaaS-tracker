@@ -396,25 +396,3 @@ NEXT_PUBLIC_API_URL=http://localhost:8000/api
 ## 📝 License
 
 This project is licensed under the MIT License.
-
-## 🙏 Acknowledgments
-
-- n8n for workflow automation
-- OpenAI for AI capabilities
-- Django REST Framework
-- Next.js team
-- TailwindCSS
-
-
-## 🗺️ Roadmap
-
-- [ ] Add more agent types (Slack, Discord, Telegram)
-- [ ] Implement agent scheduling UI
-- [ ] Add agent templates marketplace
-- [ ] Create analytics dashboard
-- [ ] Mobile app support
-- [ ] Multi-language support
-- [ ] Advanced reporting features
-- [ ] Webhook security (HMAC signatures)
-- [ ] Rate limiting for API calls
-- [ ] Agent retry logic with exponential backoff
