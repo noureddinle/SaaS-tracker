@@ -71,6 +71,19 @@ services:
     networks:
       - app-network
   
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: saasagent_ngrok
+    restart: always
+    env_file:
+      - .env
+    command: >
+      http n8n:5678
+    depends_on:
+      - n8n
+    networks:
+      - app-network
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: saasagent_pgadmin

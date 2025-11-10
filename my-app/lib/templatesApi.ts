@@ -16,7 +16,6 @@ export async function listTemplates(): Promise<any[]> {
 }
 
 export async function saveTemplateDraft(payload: { id?: number; name?: string; html: string; css: string }) {
-  // If id provided, PATCH existing; else POST new draft
   const method = payload.id ? "PATCH" : "POST";
   const url = payload.id ? `${BASE}/templates/templates/${payload.id}/` : `${BASE}/templates/templates/`;
   const res = await fetch(url, {
